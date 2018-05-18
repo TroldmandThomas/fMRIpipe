@@ -1,6 +1,7 @@
 import scipy.io 
 import numpy as np 
 import sys
+import bct #thresholding negative weights
 
 
 
@@ -34,9 +35,15 @@ obtained through other means than MATLAB Conn.
 
 '''
 
-def conn_interface(file_list):
+def conn_interface(file_list, flag='networks'):
 
     prepared_matrices = []
+
+    supported_flags = ['--networks', '--AAL']
+
+    if flag not in supported_flags:
+        print('Sorry, currently only supporting the flags: ' +str(supported_flags))
+        exit()
 
     for f in file_list:
         #check if the given file is a .mat file
@@ -44,6 +51,8 @@ def conn_interface(file_list):
         if token != 'mat':
             print(str(f) + ' was not a .mat file, closing..')
             exit()
+
+
 
         try:
             #load the matrix given by the .mat fle
@@ -54,12 +63,21 @@ def conn_interface(file_list):
             fmt = np.transpose(fm['Z'])
             fm_len = len(fm['Z'].shape)
 
+            #treat networks x AAL mat files differently
+            if flag == '--AAL':
+             #   print('flag reached!')
+                fmt = fmt[:][:,32:,32:]
+             #   print(fmt.shape)
+                #exit()
+
             #check whether a single matrix or multiple matrices
             #was given as user input
             if fm_len == 3:
                 print('Found Alot of matrices!!')
                 for i in range(fmt.shape[0]):
+                 #   print(fmt[i].shape)
                     temp = prepare_conn_matrix(fmt[i])
+                 #   print(temp.shape)
                     prepared_matrices.append(temp)
             
             
@@ -70,7 +88,7 @@ def conn_interface(file_list):
             #case for user input is a .mat file, 
             #but it has either 1D or >3D. Just close program for now
             else:
-                print('The file is some unknow collection of matrices')
+                print('The file is some unknown collection of matrices')
                 exit()
         except:
             print("Either the file was not found, or wrong usage of program.")
@@ -120,13 +138,16 @@ def prepare_conn_matrix(conn_cm):
     #should not make a difference however, since the connectivity
     #matrix is symmetric(for undirected matrices at least)
 
-    numpy_cm = np.array(conn_cm, order='F', dtype=float)
+    #IS THIS STEP REALLY NEEDED? THEY ARE ALREADY NP ARRAYS
+    #but performs in O(1) time
+    #https://stackoverflow.com/questions/39264196/read-mat-file-in-python-but-the-shape-of-the-data-changed
+    numpy_cm = np.array(conn_cm, order='A', dtype=float)
 
     #drop the last column to make it symmetric and get rid
     #of the gray matter column
     #TEST and see if correct column is dropped
 
-    sym_cm = np.delete(numpy_cm, 32, 0)
+    sym_cm = np.delete(numpy_cm, -1, 0)
 
     #Conn places NaN in the reflexive connectivity of nodes
     #which screws up Numpy's computation. 
@@ -147,6 +168,9 @@ def prepare_conn_matrix(conn_cm):
     #pearson_cm = no_NaN
     pearson_cm = np.tanh(no_NaN)
 
+    #threshhold the matrix to remove negative weights
+    thresh_cm = bct.threshold_absolute(pearson_cm, 0.0)
+
     #fill diagonal with 1's, since each node is correlated 100%
     #with itself.
     #np.fill_diagonal(pearson_cm, 1)
@@ -162,8 +186,9 @@ def prepare_conn_matrix(conn_cm):
     #pearson_cm = np.absolute(pearson_cm)
    # print(np.amin(pearson_cm))
 
-
-    return pearson_cm
+    #return no_NaN
+    #return pearson_cm
+    return thresh_cm
 
    # return conn_cm
 
