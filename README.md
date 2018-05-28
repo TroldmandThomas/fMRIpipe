@@ -40,6 +40,25 @@ On a Mac, typing the following would be sufficient:
 
 The installation will probably take a minute or two. 
 
+## Packages used
+
+A list of the packages installed from the **install.sh**. This is equivalent to a **requirements.txt**, but note that the BCT-PY one can obtain through **pip** is outdated, it is recommend to download from [the authors GitHub page](https://github.com/aestrivex/bctpy) instead. Even though that they list the same version (0.5.0), they are _not_ the same package. 
+
+* bctpy==0.5.0
+* cycler==0.10.0
+* kiwisolver==1.0.1
+* matplotlib==2.2.2
+* nibabel==2.2.1
+* numpy==1.14.3
+* pandas==0.23.0
+* pyparsing==2.2.0
+* python-dateutil==2.7.3
+* pytz==2018.4
+* rpy2==2.8.6
+* scipy==1.1.0
+* six==1.11.0
+
+
 ## Data
 
 The pipeline was built for MATLAB files following the 'Conn' module file structure. As such, it has been built for files
@@ -101,23 +120,6 @@ The lists share a similiar notation with pure Python lists.
 
 As a final note, all the files can in the pipeline can also be used individually, like regular python scripts. This is the only way to run the **glm.py**, which contains our genralized linear models (this code depends on **R** being installed, and is imported into Python by the **rpy2** module). 
 
-## Packages used
-
-A list of the packages installed from the **install.sh**. This is equivalent to a **requirements.txt**, but note that the BCT-PY one can obtain through **pip** is outdated, it is recommend to download from [the authors GitHub page](https://github.com/aestrivex/bctpy) instead. Even though that they list the same version (0.5.0), they are _not_ the same package. 
-
-* bctpy==0.5.0
-* cycler==0.10.0
-* kiwisolver==1.0.1
-* matplotlib==2.2.2
-* nibabel==2.2.1
-* numpy==1.14.3
-* pandas==0.23.0
-* pyparsing==2.2.0
-* python-dateutil==2.7.3
-* pytz==2018.4
-* rpy2==2.8.6
-* scipy==1.1.0
-* six==1.11.0
 
 
 
