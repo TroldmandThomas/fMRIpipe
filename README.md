@@ -3,7 +3,7 @@ Python pipeline for automating rs-fMRI graph theory estimates.
 The pipeline assumes preprocessing and correlation matrix construction was performed in the MATLAB module 'Conn'.  
 First step is to load the matrices from MATLAB into a numpy ndarray variable in Python,
 and then use the [BrainConnectivityToolbox](https://github.com/aestrivex/bctpy) written in Python to estimate graph theory measures. 
-Then we use packages from [scipy.stats](https://docs.scipy.org/doc/scipy/reference/stats.html) to perform t-tests and mannwhitney u-tests.
+Then we use packages from [scipy.stats](https://docs.scipy.org/doc/scipy/reference/stats.html) to perform t-tests, ks-tests and mannwhitney u-tests.
 
 This software pipeline assumes that Python3+ is installed, in particular we used Python3.6 for all the work regarding the project. 
 
@@ -37,6 +37,33 @@ On a Mac, typing the following would be sufficient:
 >sh pipeinstall.sh
 
 The installation will probably take a minute or two. 
+
+## Data
+
+The pipeline was built for MATLAB files following the 'Conn' module file structure. As such, it has been built for files
+containing correlation matrices such as _resultsROI_Condition001.mat_ . Additionally, it is required to have the corresponding
+group identification labels, which should contain at least subject status and scan season. This file could for example be named _groupID.csv_ .
+
+Experimental work has been done using pure NumPy array files, but there are some issues regarding these. We only tested with a very low sample size, which might be the reason the statistical tests in this regard are returning errors. 
+
+
+## Usage
+
+A control script for the whole pipeline can be found in _entry.py_ . It has five modes:
+
+1. 'full' (runs the whole pipeline)
+2. 'estimate (runs only the graph theory estimates)
+3. 'ttest' (runs only the t-tests and u-tests)
+4. 'graphs' (runs both t-tests, u-tests and draws graphs(plots!) based on these tests
+5. 'numpy' (experimental numpy mode, runs graph theory estimates only on provided numpy arrays)
+
+
+
+
+
+
+
+
 
 
 
