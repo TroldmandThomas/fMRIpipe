@@ -33,7 +33,7 @@ To exit the venv, simply type:
 ## Installation
 
 Once the GitHub folder containing the project has been downloaded, navigate to the folder and
-run the **pipeinstall.sh** shellscript. This will install all the 
+run the **pipeinstall.sh** shellscript. This will install all the packages required automatically.
 On a Mac, typing the following would be sufficient:
 
 >sh pipeinstall.sh
