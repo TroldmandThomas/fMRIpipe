@@ -78,6 +78,7 @@ A control script for the whole pipeline can be found in **entry.py** . It has fi
 4. 'graphs' (runs both t-tests, u-tests and draws graphs(plots!) based on these tests
 5. 'numpy' (experimental numpy mode, runs graph theory estimates only on provided numpy arrays)
 
+### full
 
 Assuming the subject file to be estimated is named **resultsROI_Condition001.mat**, 
 the group file is labeled **groupID.csv** and
@@ -88,11 +89,15 @@ the following command can be used:
 
 This will run the graph theory estimation, apply statistical testing, and finally draw some graphs/plots based upon said statistical tests. To view the produced plots, navigate to the **graphs** directory and open up one of **.png** images and have a look.
 
+### estimate
+
 For running only the graph theory estimates, try out the following command:
 
 >python3.6 entry.py estimate -mat resultsROI_Condition001.mat -id groupID.csv -thr 60:62:2
 
 Only estimate files are produced from this step, which are placed under the **auto_results** directory, with the naming convention **estimate.60.csv**. This could be useful if one wishs to add or edit estimate CSV files, that later has to be tested once the user is ready for it. 
+
+### graphs
 
 Producing graphs/plots can also be done seperately. Try out:
 
@@ -100,11 +105,15 @@ Producing graphs/plots can also be done seperately. Try out:
 
 Notice that this does not take any additional arguments. The path to the estimate files are hardcoded in, and simply performs statistical testing and plotting based on the **estimate.xx.csv** contained in the **auto_results** folder. This mode will also automatically apply statistical testing for both the summer and winter season. 
 
+### ttest
+
 The statistical results from the t-tests and u-tests are also saved in CSV files under the **tests** folder. However, the code is a bit messy and so is the resulting CSV files. This will be addressed in a future build. But for now, a simpler overview can be obtained by just running the **entry.py** script with the mode **ttest**. Try out:
 
 >python3.6 entry.py ttest
 
 This will print all the statistical result to the terminal. Not a great solution, but might be a better overview than the CSV files. 
+
+### optional clause: -cut
 
 The graph theory estimate modes also have an additional, optional clause: -cut. This will take a specified subset of the matrix, and only use this in the graph theory estimations. It is useful if multiple correlation matrices are stored in the same file. For example, if a user only wanted to use the first 32x32 indices of a given matrix, one could run the pipeline with:
 
@@ -112,11 +121,15 @@ The graph theory estimate modes also have an additional, optional clause: -cut. 
 
 Note that the option assumes one based indexing is used, this is to adhere to the MATLAB array indexing convention.
 
+### optional clause: matrices and thresholds provided as lists
+
 It is also possible to provide multiple matrices in one go, and to provide a list of thresholds rather than a range (start":"end":"stride) notation. This could be typed as:
 
 >python3.6 entry.py numpy -mat [resultsROI_Condition001_Subject001.mat,resultsROI_Condition001_Subject001.mat] -id NumPy_test/numpygroup.csv -thr [0.10,0.12,0.14,0.16,0.18,0.20]
 
 The lists share a similiar notation with pure Python lists. 
+
+## Notes
 
 As a final note, all the files can in the pipeline can also be used individually, like regular python scripts. This is the only way to run the **glm.py**, which contains our genralized linear models (this code depends on **R** being installed, and is imported into Python by the **rpy2** module). 
 
