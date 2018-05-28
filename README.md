@@ -1,6 +1,6 @@
 # fMRIpipe
 Python pipeline for automating rs-fMRI graph theory estimates.  
-The pipeline assumes preprocessing and correlation matrix construction was performed in the MATLAB module 'Conn'.  
+The pipeline assumes preprocessing and correlation matrix construction were performed in the MATLAB module 'Conn'.  
 First step is to load the matrices from MATLAB into a numpy ndarray variable in Python,
 and then use the [BrainConnectivityToolbox](https://github.com/aestrivex/bctpy) written in Python to estimate graph theory measures.
 The MATLAB version of BCT has excellent documentation about the behavior, inputs and outputs at [BCT-MATLAB](https://sites.google.com/site/bctnet/measures/list). BCT-PY is a direct port of BCT-MATLAB, so this documentation is often very helpful. 
