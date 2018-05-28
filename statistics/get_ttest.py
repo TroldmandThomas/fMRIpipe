@@ -362,6 +362,12 @@ fixed soon.
 
 def gtt_main(WS='S',alpha_norm=0.05,alpha_ttest=0.05,nt='ks'):
 
+    if WS == 'S':
+        seas = 'summer'
+    else:
+        seas = 'winter'
+
+    print('Now processing the ' + seas + ' season:')
     #find the estimate csv files
     parent = os.path.dirname(os.path.dirname( __file__ ))
     fl = glob.glob(str(parent) + '/auto_results/estimate.??.csv')
@@ -426,8 +432,10 @@ def gtt_main(WS='S',alpha_norm=0.05,alpha_ttest=0.05,nt='ks'):
     ttests = pd.concat(tframes, axis=1)
     
     #paths to the CSV files
-    norms.to_csv(dest + '/normality.csv')
-    ttests.to_csv(dest + '/ttests.csv')
+    norms.to_csv(dest + '/' + WS + '_normality.csv')
+    ttests.to_csv(dest + '/' + WS + '_ttests.csv')
+
+    print(' ')
 
 
     return (ct_list, dfl, rad_dict, thl)
