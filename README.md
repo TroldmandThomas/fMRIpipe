@@ -11,6 +11,7 @@ This software pipeline assumes that Python3+ is installed, in particular we used
 
 ## VirtualEnvironment
 It is recommended to use the virtualenvironment (venv) provided by Python3+.  
+Venv's are a way to manage Python packages, they are held in a container, thus the user only has access to packages within the venv. This is useful to simulate a clean installation of the packages, and guards against conflicting packages being installed. 
 There is an excellent primer on venv's for Python at [realpython](https://realpython.com/python-virtual-environments-a-primer/),
 if you want to know more about them. 
 To setup a venv, simply type:
