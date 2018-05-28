@@ -20,7 +20,7 @@ where 'myenv' can be any name that you choose, to be the name of the venv.
 
 Once the venv is setup, it may be activated like so:
 
->source fmrienv/bin/activate
+>source myenv/bin/activate
 
 A little parenthesis with (myenv) will show up in the terminal once the venv has been activated.  
 With the venv activated, continue with the rest of the steps outlined in this document. 
