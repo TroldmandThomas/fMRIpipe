@@ -31,7 +31,7 @@ To exit the venv, simply type:
 ## Installation
 
 Once the GitHub folder containing the project has been downloaded, navigate to the folder and
-run the _pipeinstall.sh_ shellscript. This will install all the 
+run the **pipeinstall.sh** shellscript. This will install all the 
 On a Mac, typing the following would be sufficient:
 
 >sh pipeinstall.sh
@@ -41,15 +41,15 @@ The installation will probably take a minute or two.
 ## Data
 
 The pipeline was built for MATLAB files following the 'Conn' module file structure. As such, it has been built for files
-containing correlation matrices such as _resultsROI_Condition001.mat_ . Additionally, it is required to have the corresponding
-group identification labels, which should contain at least subject status and scan season. This file could for example be named _groupID.csv_ .
+containing correlation matrices such as **resultsROI_Condition001.mat** . Additionally, it is required to have the corresponding
+group identification labels, which should contain at least subject status and scan season. This file could for example be named **groupID.csv** .
 
 Experimental work has been done using pure NumPy array files, but there are some issues regarding these. We only tested with a very low sample size, which might be the reason the statistical tests in this regard are returning errors. 
 
 
 ## Usage
 
-A control script for the whole pipeline can be found in _entry.py_ . It has five modes:
+A control script for the whole pipeline can be found in **entry.py** . It has five modes:
 
 1. 'full' (runs the whole pipeline)
 2. 'estimate' (runs only the graph theory estimates)
@@ -58,14 +58,14 @@ A control script for the whole pipeline can be found in _entry.py_ . It has five
 5. 'numpy' (experimental numpy mode, runs graph theory estimates only on provided numpy arrays)
 
 
-Assuming the subject file to be estimated is named _resultsROI_Condition001.mat_, 
-the group file is labeled _groupID_Thomas.csv_ and
+Assuming the subject file to be estimated is named **resultsROI_Condition001.mat**, 
+the group file is labeled **groupID_Thomas.csv** and
 the various thresholds to be estimated upon are from 40 to 42, with a 2 percent increase for each iteration,
 the following command can be used:
 
 >python3.6 entry.py full -mat resultsROI_Condition001.mat -id groupID_Thomas.csv -thr 40:42:2
 
-This will run the graph theory estimation, apply statistical testing, and finally draw some graphs/plots based upon said statistical tests. To view the produced plots, navigate to the _graphs_ directory
+This will run the graph theory estimation, apply statistical testing, and finally draw some graphs/plots based upon said statistical tests. To view the produced plots, navigate to the **graphs** directory
 
 
 
