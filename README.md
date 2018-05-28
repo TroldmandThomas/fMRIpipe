@@ -112,7 +112,7 @@ The graph theory estimate modes also have an additional, optional clause: -cut. 
 
 Note that the option assumes one based indexing is used, this is to adhere to the MATLAB array indexing convention.
 
-It is also possible to provide multiple matrices in one go, and to provide a list of thresholds rather than a range (start:end:stride) notation. This could be typed as:
+It is also possible to provide multiple matrices in one go, and to provide a list of thresholds rather than a range (start\:end\:stride) notation. This could be typed as:
 
 >python3.6 entry.py numpy -mat [resultsROI_Condition001_Subject001.mat,resultsROI_Condition001_Subject001.mat] -id NumPy_test/numpygroup.csv -thr [0.10,0.12,0.14,0.16,0.18,0.20]
 
