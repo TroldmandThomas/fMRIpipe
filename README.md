@@ -80,17 +80,17 @@ A control script for the whole pipeline can be found in **entry.py** . It has fi
 
 
 Assuming the subject file to be estimated is named **resultsROI_Condition001.mat**, 
-the group file is labeled **groupID_Thomas.csv** and
+the group file is labeled **groupID.csv** and
 the various thresholds to be estimated upon are from 40 to 42, with a 2 percent increase for each iteration,
 the following command can be used:
 
->python3.6 entry.py full -mat resultsROI_Condition001.mat -id groupID_Thomas.csv -thr 40:42:2
+>python3.6 entry.py full -mat resultsROI_Condition001.mat -id groupID.csv -thr 40:42:2
 
 This will run the graph theory estimation, apply statistical testing, and finally draw some graphs/plots based upon said statistical tests. To view the produced plots, navigate to the **graphs** directory and open up one of **.png** images and have a look.
 
 For running only the graph theory estimates, try out the following command:
 
->python3.6 entry.py estimate -mat resultsROI_Condition001.mat -id groupID_Thomas.csv -thr 60:62:2
+>python3.6 entry.py estimate -mat resultsROI_Condition001.mat -id groupID.csv -thr 60:62:2
 
 Only estimate files are produced from this step, which are placed under the **auto_results** directory, with the naming convention **estimate.60.csv**. This could be useful if one wishs to add or edit estimate CSV files, that later has to be tested once the user is ready for it. 
 
@@ -108,7 +108,7 @@ This will print all the statistical result to the terminal. Not a great solution
 
 The graph theory estimate modes also have an additional, optional clause: -cut. This will take a specified subset of the matrix, and only use this in the graph theory estimations. It is useful if multiple correlation matrices are stored in the same file. For example, if a user only wanted to use the first 32x32 indices of a given matrix, one could run the pipeline with:
 
->python3.6 entry.py full -mat resultsROI_Condition001.mat -id groupID_Thomas.csv -thr 40:42:2 -cut 1:32x1:32
+>python3.6 entry.py full -mat resultsROI_Condition001.mat -id groupID.csv -thr 40:42:2 -cut 1:32x1:32
 
 Note that the option assumes one based indexing is used, this is to adhere to the MATLAB array indexing convention.
 
