@@ -52,11 +52,20 @@ Experimental work has been done using pure NumPy array files, but there are some
 A control script for the whole pipeline can be found in _entry.py_ . It has five modes:
 
 1. 'full' (runs the whole pipeline)
-2. 'estimate (runs only the graph theory estimates)
+2. 'estimate' (runs only the graph theory estimates)
 3. 'ttest' (runs only the t-tests and u-tests)
 4. 'graphs' (runs both t-tests, u-tests and draws graphs(plots!) based on these tests
 5. 'numpy' (experimental numpy mode, runs graph theory estimates only on provided numpy arrays)
 
+
+Assuming the subject file to be estimated is named _resultsROI_Condition001.mat_, 
+the group file is labeled _groupID_Thomas.csv_ and
+the various thresholds to be estimated upon are from 40 to 42, with a 2 percent increase for each iteration,
+the following command can be used:
+
+>python3.6 entry.py full -mat resultsROI_Condition001.mat -id groupID_Thomas.csv -thr 40:42:2
+
+This will run the graph theory estimation, apply statistical testing, and finally draw some graphs/plots based upon said statistical tests. To view the produced plots, navigate to the _graphs_ directory
 
 
 
