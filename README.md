@@ -10,5 +10,6 @@ Then we use packages from [scipy.stats](https://docs.scipy.org/doc/scipy/referen
 It is recommended to use the virtualenvironment provided by Python3+.  
 To do so, simply type 
 > python3.6 -m venv myenv  
+
 where 'myenv' can be any name that you choose, to be the name of the virtualenvironment.
 
