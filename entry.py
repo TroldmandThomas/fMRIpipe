@@ -19,7 +19,7 @@ parser.add_argument('-id', nargs='?', help="The CSV file containing the ID for t
 parser.add_argument('-thr', nargs='?', help="The threshold range or list of thresholds.")
 parser.add_argument('-cut', nargs='?', 
          help="The part of the matrix that needs to extracted, default is the full matrix. ")
-parser.add_argument('-ws', nargs='?', help="'W' for winter, 'S' for summer.")
+#parser.add_argument('-ws', nargs='?', help="'W' for winter, 'S' for summer.")
 #parser.add_argument('-alpha', nargs='?', help="The level of significance.")
 
 args = parser.parse_args()
@@ -81,17 +81,17 @@ def error_msg():
 #running the full pipeline
 if args.mode == 'full':
 
-    # try:
+    try:
         pm = extract_matlab_mats()
         run_graph_estimates(pm)
         #get_ttest is called through draw_graphs,
         #we suppress all the printing done by get_ttest
-        #blockPrint()
+        blockPrint()
         dg.execute()
-        #enablePrint()
+        enablePrint()
         print('Full pipeline run completed.')
-    # except:
-    #     error_msg()
+    except:
+         error_msg()
 
 
 #running only the graph theory estimates on a MATLAB matrix
@@ -108,10 +108,10 @@ elif args.mode == 'estimate':
 elif args.mode == 'ttest':
 
     print('Performing t-tests..')
-    if args.ws:
-        gtt.gtt_main(WS=season)
-    else:
-        gtt.gtt_main()
+
+    gtt.gtt_main(WS='S')
+    gtt.gtt_main(WS='W')
+
     print('Done.')
 
 #running only the drawing of graphs (requires t-test to be run also)
