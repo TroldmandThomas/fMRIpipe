@@ -11,7 +11,7 @@ import statistics.draw_graphs as dg
 parser = argparse.ArgumentParser()
 
 #initialize the positional argument "mode"
-parser.add_argument("mode", help="Choose either full, estimate, ttest or graphs.")
+parser.add_argument("mode", help="Choose either full, estimate, ttest or plots.")
 
 #initialize the optional arguments
 parser.add_argument('-mat', nargs='?', help="The MATLAB Conn file containing the matrices.")
@@ -19,8 +19,9 @@ parser.add_argument('-id', nargs='?', help="The CSV file containing the ID for t
 parser.add_argument('-thr', nargs='?', help="The threshold range or list of thresholds.")
 parser.add_argument('-cut', nargs='?', 
          help="The part of the matrix that needs to extracted, default is the full matrix. ")
-#parser.add_argument('-ws', nargs='?', help="'W' for winter, 'S' for summer.")
-#parser.add_argument('-alpha', nargs='?', help="The level of significance.")
+parser.add_argument('-ws', nargs='?', help="'W' for winter, 'S' for summer.")
+parser.add_argument('-dir', nargs='?', help="Path to the estimate files.")
+parser.add_argument('-out', nargs='?', help="Path to where the resulting CSV files should be written to. ")
 
 args = parser.parse_args()
 
@@ -38,7 +39,7 @@ def enablePrint():
     sys.stdout = sys.__stdout__
 
 #to estimate the graph theory measures from the given matrices
-def run_graph_estimates(pm):
+def run_graph_estimates(pm,out=args.out):
     thresh_tok = args.thr.split(':')
     start = int(thresh_tok[0])
     end = int(thresh_tok[1])
@@ -52,7 +53,7 @@ def run_graph_estimates(pm):
     print('Running the graph theory estimations..')
     for thresh in thresh_list:
         print('Now processing threshold: ' +str(round(100 * thresh,2)) + '%')
-        oe.obtain_estimates(pm, args.id, thresh)
+        oe.obtain_estimates(pm, args.id, thresh, out)
     print("Graph theory estimates completed on all thresholds")
 
 
@@ -83,15 +84,15 @@ if args.mode == 'full':
 
     try:
         pm = extract_matlab_mats()
-        run_graph_estimates(pm)
-        #get_ttest is called through draw_graphs,
-        #we suppress all the printing done by get_ttest
-        blockPrint()
-        dg.execute()
-        enablePrint()
+        run_graph_estimates(pm, out=args.out)
+        #get_ttest is called through draw_graphs
+        direc = args.out + '/auto_results/'
+        print('Drawing graphs..')
+        dg.execute(path=direc, go=args.out, dest=args.out)
+
         print('Full pipeline run completed.')
     except:
-         error_msg()
+        error_msg()
 
 
 #running only the graph theory estimates on a MATLAB matrix
@@ -108,33 +109,18 @@ elif args.mode == 'estimate':
 elif args.mode == 'ttest':
 
     print('Performing t-tests..')
-
-    gtt.gtt_main(WS='S')
-    gtt.gtt_main(WS='W')
-
+    if args.ws:
+        gtt.gtt_main(WS=args.ws,path=args.dir, dest=args.out)
+    else:
+        gtt.gtt_main(path=args.dir, dest=args.out)
     print('Done.')
 
 #running only the drawing of graphs (requires t-test to be run also)
-elif args.mode == 'graphs':
-    print('Drawing graphs..')
-    blockPrint()
-    dg.execute()
-    enablePrint()
+elif args.mode == 'plots':
+
+    print('Drawing plots..')
+    dg.execute(path=args.dir, go=args.out)
     print('Done.')
-
-elif args.mode == 'numpy':
-
-    try:
-        cms = []
-        temps = list(map(str, args.mat.strip('[]').split(',')))
-        for item in temps:
-            cm = pd.read_csv(item, sep=',',header=None, skiprows=1).values
-            col = np.delete(cm, 0, 1)
-
-            cms.append(col)
-        run_graph_estimates(cms)
-    except:
-        error_msg()
 
 else:
     error_msg()
