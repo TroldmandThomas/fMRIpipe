@@ -197,28 +197,33 @@ def compute_ttest(d, hc_rad, sad_rad, alpha, s):
         ttest_dict[item] = ttest_res
 
         #for the csv file:
-        ttest_res_temp.append(ttest_res[1])
+        #ttest_res_temp.append(ttest_res[1])
 
         #make a list of the metric and the results
         pval_list.append((item, ttest_res[0],ttest_res[1]))
 
     #data for our ttest csv file
+    ttest_lister = pval_list
+    ttest_lister.sort(key=itemgetter(0))
+    for i in range(len(ttest_lister)):
+        ttest_res_temp.append(ttest_lister[i][2])
     ttest_csv = [d['thresh_percent'],s] + ttest_res_temp 
 
     #BENJAMIN-HOCHBERG ALGORITHM
     #used for FDR correction
     pval_list.sort(key=itemgetter(2))
-   # print(pval_list)
+    
     m = len(pval_list)
     crit_list = []
     for i in range(m):
-        crit_val = (i+1)/m * alpha
+        crit_val = ((i+1)/m) * alpha
         crit_list.append(crit_val)
     
     comp = -1
     for j in range(m):
         if crit_list[j] > pval_list[j][2]:
             comp = j
+
 
 
     #the above computes the q-value from our p-values, 
@@ -231,7 +236,7 @@ def compute_ttest(d, hc_rad, sad_rad, alpha, s):
         dr['rejected_ttest'] = []
     #code for appending all those metrics which reject the null hypothesis
     else:
-        comp += 1
+        comp += 0
         ad_list = pval_list[comp:]
         rd_list = pval_list[:comp]
         dr['accepted_ttest'] = ad_list
@@ -421,6 +426,7 @@ def gtt_main(WS='S',alpha_norm=0.05,alpha_ttest=0.05,nt='ks', path=None, dest=No
 
         #perform the actual t-testing
         ttest_result,ttest_csv = compute_ttest(item, hc_rad, sad_rad, alpha_ttest, WS)
+        print(ttest_csv)
 
         #save the results in dictionaries for return value
         ct_list.append(ttest_result)
