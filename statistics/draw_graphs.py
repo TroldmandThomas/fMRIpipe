@@ -6,14 +6,9 @@ import matplotlib.pyplot as plt
 import glob
 from collections import OrderedDict
 import statistics.get_ttest as gtt
+import os
+import sys
 
-#where to put the graphs
-dest = 'graphs'
-
-#makes a directory if it does not already exist
-#does nothing if the directory exists
-#Python3+ dependent
-pathlib.Path(dest).mkdir(parents=True, exist_ok=True)
 
 '''
 Parameters
@@ -56,7 +51,11 @@ and the min and max for the threshold percentages.
 
 '''
 
-def draw_graphs(data, ttest, metric, rad, thrs, s='S'):
+def draw_graphs(data, ttest, metric, rad, thrs, s='S', go=None):
+
+    if go == None:
+        print('Please specify a directory to write the plots to.')
+        exit()
 
     #initialize the plot axis variables
     ymax = -100
@@ -75,12 +74,14 @@ def draw_graphs(data, ttest, metric, rad, thrs, s='S'):
         thresh = data[i]['thresh_percent']
         SADS = data[i]['groups'].get_group(('Case', s))
         HCS = data[i]['groups'].get_group(('Healthy Control', s))
+
+        jitter = 0.3
  
         #errorbars for our two sample groups
         y1error = SADS[metric].std()
         y2error = HCS[metric].std()
-        plt.errorbar(float(thresh), SADS[metric].mean(), yerr=y1error, color='red', marker='D')
-        plt.errorbar(float(thresh), HCS[metric].mean(), yerr=y2error, color='blue', marker='D')
+        plt.errorbar(float(thresh)-jitter, SADS[metric].mean(), yerr=y1error, color='red', marker='D')
+        plt.errorbar(float(thresh)+jitter, HCS[metric].mean(), yerr=y2error, color='blue', marker='D')
 
         #figure out the best axis values for both our x and y axis
         hc_max = HCS[metric].max()
@@ -105,21 +106,24 @@ def draw_graphs(data, ttest, metric, rad, thrs, s='S'):
     #adjust the x-axis slightly
     xmin = xmin - 2
     xmax = xmax + 2
-        
+
+    
     
     #code for putting markers on the graphs to show which samples that failed the ttest
     for j in range(len(ttest)):
+
+        for k in range(len(ttest[j]['rejected_ttest'])):
+
+            temp = ttest[j]['rejected_ttest'][k][0]
+            if temp == metric:
+                plt.plot(float(ttest[j]['thresh_percent']), ymax-(0.05*ymax), color='black', marker='*', markersize=12)
         
         temp2 = ttest[j]['rejected_norm']
         if metric in temp2:
-             plt.plot(ttest[j]['thresh_percent'], ymax-(0.05*ymax), color='yellow', marker='^', markersize=12)
-        try:
-            temp = ttest[j]['rejected_ttest'][metric]
-            plt.plot(ttest[j]['thresh_percent'], ymax-(0.05*ymax), 'k*', markersize=12)
-        except:
-            pass
+             plt.plot(ttest[j]['thresh_percent'], ymax-(0.05*ymax), color='green', marker='*', markersize=12)
+
         
-  #COMMENT IN FOR SHOWING WHICH OF THE NORMAL DISTRIBUTION T-TEST THAT FAILS     
+  #COMMENT IN FOR SHOWING WHICH OF THE NORMAL DISTRIBUTION KS-TEST THAT FAILS     
     # for k in range(len(thrs)):
        
     #    try:
@@ -161,59 +165,79 @@ def draw_graphs(data, ttest, metric, rad, thrs, s='S'):
 
     met = metric.split(':')[0]
 
+    #where to put the graphs
+    dest = '/plots'
+
+    #makes a directory if it does not already exist
+    #does nothing if the directory exists
+    #Python3+ dependent
+    pathlib.Path(go + dest).mkdir(parents=True, exist_ok=True)
+  
+
     #build the name which will be used as the stored file name
-    filename = str(dest) + '/' + str(s) + '_' + str(met) + '.png'
+    filename = str(go) + str(dest) + '/' + str(s) + '_' + str(met) + '.png'
 
     #save the file to disk
     plt.savefig(filename, format='png', bbox_inches='tight')
 
 
-def execute():
+# Disable printing function
+def blockPrint():
+    sys.stdout = open(os.devnull, 'w')
+
+# Restore printing function
+def enablePrint():
+    sys.stdout = sys.__stdout__
+
+
+def execute(path=None, dest=None, go=None):
     #extract the summer season data,
     #run the t-tests on the data before and use the return
     #value of get_ttest.py to draw graphs upon
-    kwdata = gtt.gtt_main(WS='W',nt='ks')
+    blockPrint()
+    kwdata = gtt.gtt_main(WS='W',nt='ks',path=path, dest=dest)
     kwt = kwdata[0]
     kwd = kwdata[1]
     kwr = kwdata[2]
     kwp = kwdata[3]
 
 
-    kdata = gtt.gtt_main(WS='S',nt='ks')
+    kdata = gtt.gtt_main(WS='S',nt='ks',path=path, dest=dest)
     kt = kdata[0]
     kd = kdata[1]
     kr = kdata[2]
     kp = kdata[3]
+    enablePrint()
 
-
+    
     #draw the actual graphs
-    draw_graphs(kd,kt,'charpath-lambda', kr, kp)
+    draw_graphs(kd,kt,'charpath-lambda', kr, kp, go=go)
 
-    draw_graphs(kwd,kwt,'charpath-lambda', kwr, kwp,s='W')
+    draw_graphs(kwd,kwt,'charpath-lambda', kwr, kwp,s='W', go=go)
 
-    draw_graphs(kd,kt,'efficiency_wei-Eglob', kr, kp)
+    draw_graphs(kd,kt,'efficiency_wei-Eglob', kr, kp, go=go)
 
-    draw_graphs(kwd,kwt,'efficiency_wei-Eglob', kwr, kwp,s='W')
+    draw_graphs(kwd,kwt,'efficiency_wei-Eglob', kwr, kwp,s='W', go=go)
 
-    draw_graphs(kd,kt,'assortativity_wei-r',kr,kp)
+    draw_graphs(kd,kt,'assortativity_wei-r',kr,kp, go=go)
 
-    draw_graphs(kwd,kwt,'assortativity_wei-r',kwr,kwp,s='W')
+    draw_graphs(kwd,kwt,'assortativity_wei-r',kwr,kwp,s='W', go=go)
 
-    draw_graphs(kd,kt,'avg_clustering_coef_wu:C',kr,kp)
+    draw_graphs(kd,kt,'avg_clustering_coef_wu:C',kr,kp, go=go)
 
-    draw_graphs(kwd,kwt,'avg_clustering_coef_wu:C',kwr,kwp,s='W')
+    draw_graphs(kwd,kwt,'avg_clustering_coef_wu:C',kwr,kwp,s='W', go=go)
 
-    draw_graphs(kd,kt,'modularity_und-Q',kr,kp)
+    draw_graphs(kd,kt,'modularity_und-Q',kr,kp, go=go)
 
-    draw_graphs(kwd,kwt,'modularity_und-Q',kwr,kwp,s='W')
+    draw_graphs(kwd,kwt,'modularity_und-Q',kwr,kwp,s='W',go=go)
 
-    draw_graphs(kd,kt,'small_worldness:S',kr,kp)
+    draw_graphs(kd,kt,'small_worldness:S',kr,kp, go=go)
 
-    draw_graphs(kwd,kwt,'small_worldness:S',kwr,kwp,s='W')
+    draw_graphs(kwd,kwt,'small_worldness:S',kwr,kwp,s='W', go=go)
 
-    draw_graphs(kd,kt,'transitivity_wu-T',kr,kp)
+    draw_graphs(kd,kt,'transitivity_wu-T',kr,kp, go=go)
 
-    draw_graphs(kwd,kwt,'transitivity_wu-T',kwr,kwp,s='W')
+    draw_graphs(kwd,kwt,'transitivity_wu-T',kwr,kwp,s='W', go=go)
 
 
 

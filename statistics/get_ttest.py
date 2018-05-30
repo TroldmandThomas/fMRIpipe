@@ -66,7 +66,7 @@ def get_norm_dist(d, alpha, g, s,nor_t='ks'):
 
     for item in nd:
 
-            #normalize our data first
+            #normalize our data first, to ttest against the implementation of N ~ (0,1)
             normalized = (nd[item] - nd[item].mean()) / nd[item].std()
             
             #pick either ks or shapiro test, can be expanded by other tests
@@ -122,6 +122,10 @@ dr : OrderedDict,
      the dictionary of rejections, mainly containing those samples which
      were not normally distributed under both the HC sampls AND the SAD samples.
 
+ttest_csv : list
+            data list for the results of the t-testing, will be saved to a csv files
+            with raw, unadjusted p-values.
+
 Notes
 -----
 
@@ -174,27 +178,37 @@ def compute_ttest(d, hc_rad, sad_rad, alpha, s):
     #when p < alpha, null hypothesis is rejected
 
     ttest_dict = OrderedDict()
+    ttest_res_temp = []
     pval_list = []
 
     #those samples which were both normally distributed, 
     #we run a t-test on them. 
     for item in both_norm:
 
-        #normalize our data before t-testing
-        normalized_SAD = (SAD_guys[item] - SAD_guys[item].mean()) / SAD_guys[item].std()
-        normalized_HC = (HC_guys[item] - HC_guys[item].mean()) / HC_guys[item].std()
+        #DO NOT NORMALIZE DATA BEFORE T-TESTING, MEANS WILL BE IDENTICAL
+        # #normalize our data before t-testing
+        # normalized_SAD = (SAD_guys[item] - SAD_guys[item].mean()) / SAD_guys[item].std()
+        # normalized_HC = (HC_guys[item] - HC_guys[item].mean()) / HC_guys[item].std()
 
         #use Welch's t-test, i.e. unknown variance and unequal sample sizes
-        ttest_res = stats.ttest_ind(normalized_SAD, normalized_HC, equal_var=False)
+        ttest_res = stats.ttest_ind(SAD_guys[item], HC_guys[item], equal_var=False)
 
         #store the resulting tuple (t-statistic, p-value)
         ttest_dict[item] = ttest_res
+
+        #for the csv file:
+        ttest_res_temp.append(ttest_res[1])
+
         #make a list of the metric and the results
         pval_list.append((item, ttest_res[0],ttest_res[1]))
-        
+
+    #data for our ttest csv file
+    ttest_csv = [d['thresh_percent'],s] + ttest_res_temp 
+
     #BENJAMIN-HOCHBERG ALGORITHM
     #used for FDR correction
     pval_list.sort(key=itemgetter(2))
+   # print(pval_list)
     m = len(pval_list)
     crit_list = []
     for i in range(m):
@@ -227,7 +241,7 @@ def compute_ttest(d, hc_rad, sad_rad, alpha, s):
                 +str(rd_list[k][0]) + ' with a p-value of :' +str(round(rd_list[k][2],6)) \
                   + ' in the threshold with ' + str(d['thresh_percent']) + '%')
 
-    return dr 
+    return (dr,ttest_csv) 
 
 
 
@@ -269,13 +283,16 @@ def compute_mannwhitney(d, hc_rad, sad_rad, alpha, s):
     
     res_list = []
 
+
     for item in hc_rad['rejected']:
         res = stats.mannwhitneyu(SAD_guys[item], HC_guys[item], alternative='two-sided')
         res_list.append((res,item))
 
+
     for item in sad_rad['rejected']:
         res = stats.mannwhitneyu(SAD_guys[item], HC_guys[item], alternative='two-sided')
         res_list.append((res,item))
+
 
     # #BENJAMIN-HOCHBERG ALGORITHM
     # #used for FDR correction
@@ -360,17 +377,16 @@ fixed soon.
 
 '''
 
-def gtt_main(WS='S',alpha_norm=0.05,alpha_ttest=0.05,nt='ks'):
+def gtt_main(WS='S',alpha_norm=0.05,alpha_ttest=0.05,nt='ks', path=None, dest=None):
 
-    if WS == 'S':
-        seas = 'summer'
-    else:
-        seas = 'winter'
+    #     path = os.path.dirname(os.path.dirname( __file__ ))
+    if path == None:
+        print(' ')
+        print('**Please provide a path to the estimate files**')
+        exit()
 
-    print('Now processing the ' + seas + ' season:')
-    #find the estimate csv files
-    parent = os.path.dirname(os.path.dirname( __file__ ))
-    fl = glob.glob(str(parent) + '/auto_results/estimate.??.csv')
+    # find the estimate files in the given directory
+    fl = glob.glob(str(path) + '/estimate.??.csv')
     #'auto_results/estimates/AALestimate.??.csv'
     
     #create a list of dictionaries, 
@@ -394,8 +410,8 @@ def gtt_main(WS='S',alpha_norm=0.05,alpha_ttest=0.05,nt='ks'):
     #compute the t-test for the various thresholds
     ct_list = []
     rad_dict = OrderedDict()
+    t_csv = []
     frames = []
-    tframes = []
     
 
     for item in dfl:
@@ -404,7 +420,7 @@ def gtt_main(WS='S',alpha_norm=0.05,alpha_ttest=0.05,nt='ks'):
         sad_rad = get_norm_dist(item, alpha_norm, 'Case', WS,nor_t=nt)
 
         #perform the actual t-testing
-        ttest_result = compute_ttest(item, hc_rad, sad_rad, alpha_ttest, WS)
+        ttest_result,ttest_csv = compute_ttest(item, hc_rad, sad_rad, alpha_ttest, WS)
 
         #save the results in dictionaries for return value
         ct_list.append(ttest_result)
@@ -413,29 +429,34 @@ def gtt_main(WS='S',alpha_norm=0.05,alpha_ttest=0.05,nt='ks'):
         rad_dict[item['thresh_percent']]['SAD'] = sad_rad
 
         #build up the dataframes to save as a CSV file
+        #CSV for normality tests
         frames.append(pd.DataFrame(hc_rad))
         frames.append(pd.DataFrame(sad_rad))
-
-        tframes.append(pd.Series(ttest_result))
+        #CSV for ttests
+        t_csv.append(ttest_csv)
 
         #perform Wilcoxon rank sum if there are any rejections of normal distributions
         if len(hc_rad['rejected'])!= 0 or len(sad_rad['rejected'])!=0:
             compute_mannwhitney(item, hc_rad, sad_rad, alpha_ttest, WS)
     
-    #save the results to CSV files
-    #first make a directory to save the files to
-    dest = 'tests'
-    pathlib.Path(dest).mkdir(parents=True, exist_ok=True)
-    #save the normality tests to a CSV file
-    norms = pd.concat(frames)
-    #save the ttests results to a CSV file
-    ttests = pd.concat(tframes, axis=1)
-    
-    #paths to the CSV files
-    norms.to_csv(dest + '/' + WS + '_normality.csv')
-    ttests.to_csv(dest + '/' + WS + '_ttests.csv')
 
-    print(' ')
+    if dest != None:    
+        #save the results to CSV files
+        #first make a directory to save the files to
+        dest = dest + '/tests'
+        pathlib.Path(dest).mkdir(parents=True, exist_ok=True)
+    
+        norms = pd.concat(frames)
+
+        ttests = pd.DataFrame(t_csv, columns=['Threshold', 'Season', \
+            'Assortativity', 'ClusteringCoefficient', 'CharPath', 'GlobalEfficiency', \
+            'Modularity', 'SmallWorld', 'Transitivity'])
+
+        #paths to the CSV files
+        #save the normality tests to a CSV file
+        norms.to_csv(dest + '/' + WS + '_normality.csv')
+        #save the ttests results to a CSV file
+        ttests.to_csv(dest + '/'+ WS + '_ttests.csv')
 
 
     return (ct_list, dfl, rad_dict, thl)
