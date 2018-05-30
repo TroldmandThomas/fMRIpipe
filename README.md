@@ -8,7 +8,7 @@ Then we use packages from [scipy.stats](https://docs.scipy.org/doc/scipy/referen
 
 ## Prerequisites
 This software pipeline assumes that Python3+ is installed, in particular we used Python3.6 for all the work regarding the project.   
-Testing performed with other versions of Python has NOT been carried out.
+Testing performed with other versions of Python has _NOT_ been carried out.
 
 ## VirtualEnvironment
 It is recommended to use the virtualenvironment (venv) provided by Python3+.  
@@ -43,7 +43,7 @@ The installation will probably take a minute or two.
 
 ## Packages used
 
-A list of the packages installed from the **install.sh**. This is equivalent to a **requirements.txt**, but note that the BCT-PY one can obtain through **pip** is outdated, it is recommend to download from [the authors GitHub page](https://github.com/aestrivex/bctpy) instead. Even though that they list the same version (0.5.0), they are _not_ the same package. 
+A list of the packages installed from the **install.sh**. This is equivalent to a **requirements.txt**, but note that the BCT-PY one can obtain through **pip** is outdated, it is recommended to download from [the authors GitHub page](https://github.com/aestrivex/bctpy) instead. Even though that they list the same version (0.5.0), they are _not_ the same package. 
 
 * bctpy==0.5.0
 * cycler==0.10.0
@@ -87,7 +87,7 @@ then the following command can be used:
 
 >python3.6 entry.py estimate -mat resultsROI_Condition001.mat -id groupID_Thomas.csv -thr 40:42:2 -out ~/Desktop/PipeTest
 
-Only estimate files are produced from this step, which are placed under the **auto_results** directory, with the naming convention **estimate.xx.csv**, where 'xx' denote the threshold percentage. 
+Only estimate files are produced from this step, which are placed under the **auto_results** directory, with the naming convention **estimate.xx.csv**, where '_xx_' denote the threshold percentage. 
 This could be useful if one wishes to add or edit estimate CSV files, that later has to be tested once the user is ready for it. 
 
 ### ttest
@@ -97,7 +97,7 @@ The following command can be used to run the statistical tests:
 
 >python3.6 entry.py ttest -ws 'W' -dir ~/Desktop/PipeTest/auto_results -out ~/Desktop/PipeTest/
 
-where **-ws** denotes the season ('W' for winter, 'S' for summer), **-dir** denotes the path to the files that should be testet (i.e. the estimate files obtained from running in _estimate_ mode) and **-out** is the path to where the resulting CSV files with the _p_-values should be written to. A folder named **tests** is created at the given path by -out. Within **tests**, two CSV files are created: **W_normality.csv** (which contains results of KS-tests) and **W_ttests.csv** (which contains the results of the two sample t-tests).  
+where **-ws** denotes the season ('W' for winter, 'S' for summer), **-dir** denotes the path to the files that should be testet (i.e. the estimate files obtained from running in _estimate_ mode) and **-out** is the path to where the resulting CSV files with the _p_-values should be written to. A folder named **tests** is created at the given path by **-out**. Within **tests**, two CSV files are created: **W_normality.csv** (which contains results of KS-tests) and **W_ttests.csv** (which contains the results of the two sample t-tests).  
 This mode also prints the various results to the screen when run. 
 
 ### plots
