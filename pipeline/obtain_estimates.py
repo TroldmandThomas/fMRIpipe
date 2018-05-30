@@ -15,12 +15,12 @@ import pipeline.graph_estimates as ge
 #at the moment, just some path names to save results, 
 #and for reading the mask for ROI's
 
-result_dir = 'auto_results'
-vector_dir = '/vector_measures/'
-csv_dest = '/estimate.csv'
 ROI_template = 'networks.nii'
 mask_name = ROI_template.split('/')[-1].split('.')[0]
-dest = result_dir + vector_dir
+# result_dir = 'auto_results'
+# vector_dir = '/vector_measures/'
+# csv_dest = '/estimate.csv'
+# dest = result_dir + vector_dir
 
 
 ##########################################################################
@@ -103,6 +103,8 @@ mn : string
 sn : string
      The subject name, for saving in the following format:
      measuretype_mask_subject.nii
+dest : string
+       the path to the directory where the resulting vector files will be put
 
 
 Returns
@@ -118,7 +120,12 @@ Notes: Try and see if a folder can be save to instead just of current directory.
 '''
 
 
-def save_image(img, mn, sn):
+def save_image(img, mn, sn, dest):
+
+    #make a directory to contain our vector estimate files,
+    #does nothing if the directory already exists.
+    #Python 3+ dependent
+    pathlib.Path(dest).mkdir(parents=True, exist_ok=True) 
     
     formatted_name = mn + '_' + mask_name + '_' + sn
     f = dest + '/' + formatted_name
@@ -203,6 +210,8 @@ file_name_list : list
 groupIDcsv : csv file
              The accompying csv file to generate the ID tags for each 
              subject in the scan file. 
+dest : string
+       the path to the directory where the resulting estimate files will be put
 
 Returns
 -------
@@ -214,18 +223,13 @@ Returns
 
 '''
 
-def obtain_estimates(cm_list, groupIDcsv, th):
+def obtain_estimates(cm_list, groupIDcsv, th, path):
 
     dic_list = []
-
+    
     #the CSV file used to identify and label the subjects in our matrix file
     iddf = pd.read_csv(groupIDcsv)
     
-    #make a directory to contain our estimate files,
-    #does nothing if the directory already exists.
-    #Python 3+ dependent
-    pathlib.Path(dest).mkdir(parents=True, exist_ok=True) 
-     
     #filter out the singular values to be saved to .csv file,
     #the vector measures will be saved to disk
     #For each connection matrix file, 
@@ -262,11 +266,16 @@ def obtain_estimates(cm_list, groupIDcsv, th):
     df = pd.DataFrame(dic_list)
 
     #insert the threshold into the csv name
+    csv_dest = '/estimate.csv'
     csv_split = csv_dest.split('.')
     csv_name = csv_split[0] + '.' + str(th_p) + '.' +  csv_split[1]
 
+    result_dir = '/auto_results'
+    est_dir = path + result_dir
+    pathlib.Path(est_dir).mkdir(parents=True, exist_ok=True)
+
     #save the estimates to our CSV file
-    df.to_csv(result_dir + csv_name)
+    df.to_csv(est_dir + csv_name)
     
     return
 

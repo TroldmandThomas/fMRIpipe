@@ -55,6 +55,7 @@ def conn_interface(file_list, size='full'):
             fmt = np.transpose(fm['Z'])
             fm_len = len(fm['Z'].shape)
 
+
             #check if user gave any other dimensions than just the full matrix,
             #modify the matlab matrix appropriately
             #WILL ASSUME 1-INDEXING IS USED
