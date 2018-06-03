@@ -118,6 +118,14 @@ All the above modes can be combined into a single command:
 
 This will run the graph theory estimation, apply statistical testing, and finally draw some plots based upon said statistical tests. Notice that this command takes exactly the same inputs as the _estimate_ mode. It will produce three folders, **auto_results**, **tests** and **plots** in the given path by **-out**. In these three folders, files will be placed as described previously. 
 
+### glm
+
+Our generalized linear model can be carried out by the following command:
+
+>python3.6 entry.py glm -dir ~/Desktop/fMRIpiperesults/AALestimates/estimate.10.csv -ws 'S'
+
+The mode needs a single estimate file, and then a season to perform the logistic regression upon. At the moment, the results of the GLM are only printed to the screen in the terminal. No CSV files are produced as of now. 
+
 ### optional clause: -cut
 
 The graph theory estimate modes for _estimate_ and _full_ also have an additional, optional clause: **-cut**. This will take a specified subset of the matrix, and only use this in the graph theory estimations. It is useful if multiple correlation matrices are stored in the same file. For example, if a user only wanted to use the first _32x32_ indices of a given matrix, one could run the pipeline with:
