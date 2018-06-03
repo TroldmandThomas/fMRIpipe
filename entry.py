@@ -6,12 +6,13 @@ import pipeline.loadmatrix as lm
 import pipeline.obtain_estimates as oe
 import statistics.get_ttest as gtt
 import statistics.draw_graphs as dg
+import statistics.glm as glm
 
 #initialize parser
 parser = argparse.ArgumentParser()
 
 #initialize the positional argument "mode"
-parser.add_argument("mode", help="Choose either full, estimate, ttest or plots.")
+parser.add_argument("mode", help="Choose either full, estimate, ttest, plots or glm.")
 
 #initialize the optional arguments
 parser.add_argument('-mat', nargs='?', help="The MATLAB Conn file containing the matrices.")
@@ -121,6 +122,14 @@ elif args.mode == 'plots':
     print('Drawing plots..')
     dg.execute(path=args.dir, go=args.out)
     print('Done.')
+
+elif args.mode == 'glm':
+
+    print('Performing GLM..')
+    glm.glm(args.dir, s=args.ws)
+    print('')
+    print('GLM comparisons carried out.')
+
 
 else:
     error_msg()
