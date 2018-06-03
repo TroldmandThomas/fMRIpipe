@@ -124,7 +124,7 @@ Our generalized linear model can be carried out by the following command:
 
 >python3.6 entry.py glm -dir ~/Desktop/fMRIpiperesults/AALestimates/estimate.10.csv -ws 'S'
 
-The mode needs a single estimate file, and then a season to perform the logistic regression upon. At the moment, the results of the GLM are only printed to the screen in the terminal. No CSV files are produced as of now. 
+The mode needs a single estimate file, and then a season to perform the logistic regression upon. At the moment, the results of the GLM are only printed to the screen in the terminal. No CSV files are produced as of now. This code depends on **R** being installed, and is imported into Python by the **rpy2** module.
 
 ### optional clause: -cut
 
@@ -134,9 +134,6 @@ The graph theory estimate modes for _estimate_ and _full_ also have an additiona
 
 Note that the option assumes one-based indexing is used, this is to adhere to the MATLAB array indexing convention.
 
-## Notes
-
-As a final note, all the files can in the pipeline can also be used individually, like regular python scripts. This is the only way to run the **glm.py**, which contains our generalized linear models (this code depends on **R** being installed, and is imported into Python by the **rpy2** module). 
 
 
 
