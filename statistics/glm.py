@@ -41,8 +41,7 @@ def glm(path, s='S'):
     df['Group'] = df['Group'].map({'Case': 1, 'Healthy Control': 0})
     df['Season'] = df['Season'].map({'S': 1, 'W': 0})
 
-    #the csv files contained the return value names of bctpy, statsmodels.MixedLM does not seem to like -:_ characters,
-    #thus we rename all the dictionary keys so that statsmodels.MixedLM is happy
+    #remap the bct function output names to something a bit more digestable for us to use in the rest of the code
     df.rename(index=str, columns={'charpath-lambda': 'charpath', 'avg_clustering_coef_wu:C' : 'cc','efficiency_wei-Eglob' : 'effGlob', \
                                    'assortativity_wei-r' : 'assor', 'modularity_und-Q' : 'modul', 'transitivity_wu-T' : 'trans', \
                                    'small_worldness:S' : 'smwor',   'Unnamed: 0' : 'ID'  }, inplace=True)
@@ -114,15 +113,19 @@ def glm(path, s='S'):
     print(' ')
     print('GLM performed with season: ' + str(sum_win))
 
-    print(' ')
+    
     n = 12
-    print('Adjusted p-values after Bonferroni correction for multiple comparison testing with '\
-           + str(n) + ' tests')
+    
     lst = [lr_a[4][1],lr_cpl[4][1],lr_cc[4][1],lr_m[4][1],lr_s[4][1],lr_t[4][1]]
     flist = [float(i) for i in lst]
     flist = [round(i,4) for i in flist]
-
+    
+    print(' ')
+    print('Unadjusted p-values for our GLM)
     print(flist)
+    print(' ')
+    print('Adjusted p-values after Bonferroni correction for multiple comparison testing with '\
+           + str(n) + ' tests')
     print(stats.p_adjust(FloatVector(flist), method='bonferroni', n=n))
 
 
