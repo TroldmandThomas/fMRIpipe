@@ -28,7 +28,7 @@ git clone https://github.com/aestrivex/bctpy.git
 
 #install bctpy
 cd bctpy
-python3.4 setup.py install
+python3.6 setup.py install
 cd ..
 
 
