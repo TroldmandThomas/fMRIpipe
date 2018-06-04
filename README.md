@@ -59,6 +59,14 @@ A list of the packages installed from the **install.sh**. This is equivalent to 
 * scipy==1.1.0
 * six==1.11.0
 
+## Note
+
+If you are getting weird warnings from the **rpy2** module, try entering following commands in the terminal:
+
+>export LANG=en_US.UTF-8
+>export LC_ALL=en_US.UTF-8
+>locale
+
 
 ## Data
 
