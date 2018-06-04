@@ -426,7 +426,7 @@ def gtt_main(WS='S',alpha_norm=0.05,alpha_ttest=0.05,nt='ks', path=None, dest=No
 
         #perform the actual t-testing
         ttest_result,ttest_csv = compute_ttest(item, hc_rad, sad_rad, alpha_ttest, WS)
-        print(ttest_csv)
+        
 
         #save the results in dictionaries for return value
         ct_list.append(ttest_result)
