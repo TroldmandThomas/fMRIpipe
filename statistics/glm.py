@@ -121,7 +121,7 @@ def glm(path, s='S'):
     flist = [round(i,4) for i in flist]
     
     print(' ')
-    print('Unadjusted p-values for our GLM)
+    print('Unadjusted p-values for our GLM')
     print(flist)
     print(' ')
     print('Adjusted p-values after Bonferroni correction for multiple comparison testing with '\
